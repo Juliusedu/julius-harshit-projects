@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mixpanel Data Visualization</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ebf4f7;
+            color: #005a70;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #047a9c;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: #005a70;
+            border-bottom: 2px solid #047a9c;
+            padding-bottom: 10px;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .plot-container {
+            background-color: #fff;
+            border: 1px solid #c0c0c0;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Mixpanel Data Visualization</h1>
+    </header>
+    <div class="container">
+        <div class="plot-container">
+            <h2>Clicks Data</h2>
+            <div id="clicks-plot">
+                {{ clicks_plot|safe }}
+            </div>
+        </div>
+        <div class="plot-container">
+            <h2>Hovers Data</h2>
+            <div id="hovers-plot">
+                {{ hovers_plot|safe }}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

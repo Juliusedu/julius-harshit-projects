@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }} Analytics Dashboard</title> <!-- Dynamic Title -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>{{ title }} Analytics Dashboard</h1> <!-- Dynamic Title -->
+    </header>
+    <main>        
+        <form method="GET" action="/">
+            <label for="property_id">Select Property:</label>
+            <select name="property_id" id="property_id" onchange="checkCustomOption(this.value)">
+                <option value="383822713">Julius - Webflow GA4</option>
+                <option value="314080261">Julius Live</option>
+                <option value="405124596">TWT</option>
+                <option value="404949071">Network</option>
+                <option value="448075572">NENY</option>
+                <option value="405046512">My</option>
+                <option value="405050777">MN</option>
+                <option value="405024738">KFC2</option>
+                <option value="405113132">KFC</option>
+                <option value="414142783">Electrical Construction</option>
+                <option value="414149946">DCDOEE</option>
+                <option value="405096830">AESP</option>
+                <option value="405060547">Advanced Manufacturing</option>
+                <option value="custom">Custom Property ID</option>
+            </select>
+
+            <!-- Hidden input for custom property ID -->
+            <div id="custom_property_div" style="display:none;">
+                <label for="custom_property_id">Enter Custom Property ID:</label>
+                <input type="text" id="custom_property_id" name="custom_property_id" placeholder="Enter custom property ID">
+            </div>
+
+            <label for="date_range">Select Date Range:</label>
+            <select name="date_range" id="date_range">
+                <!-- <option value="today">Today</option> -->
+                <option value="this_week">This week</option>
+                <option value="last_week">Last week</option>
+                <option value="7daysAgo-today">Last 7 days</option>
+                <option value="14daysAgo-today">Last 14 days</option>
+                <option value="28daysAgo-today">Last 28 days</option>
+                <option value="30daysAgo-today">Last 30 days</option>
+                <option value="60daysAgo-today">Last 60 days</option>
+                <option value="90daysAgo-today">Last 90 days</option>
+                <option value="last_12months">Last 12 months</option>
+                <option value="custom">Custom range</option>
+            </select>
+
+            <div id="custom_date_range" style="display:none;">
+                <label for="start_date">Start Date (YYYY-MM-DD):</label>
+                <input type="text" id="start_date" name="start_date" class="datepicker" placeholder="YYYY-MM-DD">
+                <label for="end_date">End Date (YYYY-MM-DD):</label>
+                <input type="text" id="end_date" name="end_date" class="datepicker" placeholder="YYYY-MM-DD">
+            </div>
+
+            <button type="submit">Get Report</button>
+        </form>
+
+        <!-- <p><strong>Selected Property ID:</strong> {{ property_id }} </p> -->
+        <p><strong>Selected Date Range:</strong> 
+            {% if date_range == '30daysAgo-today' %}
+                Last 30 days
+            {% elif date_range == '7daysAgo-today' %}
+                Last 7 days
+            {% elif date_range == '90daysAgo-today' %}
+                Last 90 days
+            {% elif date_range == '14daysAgo-today' %}
+                Last 14 days
+            {% elif date_range == '28daysAgo-today' %}
+                Last 28 days
+            {% elif date_range == '60daysAgo-today' %}
+                Last 60 days
+            {% elif date_range == 'last_12months' %}
+                Last 12 months
+            {% elif date_range == 'today' %}
+                Today
+            {% elif date_range == 'this_week' %}
+                This week
+            {% elif date_range == 'last_week' %}
+                Last week
+            {% elif date_range == 'custom' %}
+                {{ start_date }} - {{ end_date }}
+            {% else %}
+                {{ date_range | replace('-', ' to ') }}
+            {% endif %}
+        </p>        
+        <div id="map_active_users_by_region" class="graph">
+            <h2>Active Users by Region 
+                <i class="fas fa-question-circle" style="color: blue;" title="The number of unique users who engaged with your site or app, categorized by their region. This can help identify where most of your users are coming from."></i>
+            </h2>
+            <div>{{ graphs['map_active_users_by_region'] | safe }}</div>
+        </div>
+        
+        {% for key, graph in graphs.items() %}
+            {% if key != 'map_active_users_by_region' %}
+            <div class="graph">
+                <h2>
+                    {{ key.replace('_', ' ').title() }}
+                    {% if key == 'active_users' %}
+                    <i class="fas fa-question-circle" style="color: blue;" title="The number of unique users who engaged with your site or app during the selected date range. Each user is counted only once, regardless of how often they visit."></i>
+                    {% elif key == 'new_users' %}
+                    <i class="fas fa-question-circle" style="color: blue;" title="The number of users who interacted with your site or app for the first time during the selected date range. This metric helps to measure how well you are attracting new visitors."></i>
+                    {% elif key == 'page_views' %}
+                    <i class="fas fa-question-circle" style="color: blue;" title="The total number of pages viewed during the selected date range. This includes repeated views of a single page. High page views can indicate high user engagement."></i>
+                    {% elif key == 'sessions' %}
+                    <i class="fas fa-question-circle" style="color: blue;" title="The number of sessions that began on your site or app during the selected date range. A session is a group of user interactions with your website that take place within a given time frame."></i>
+                    {% elif key == 'avg_session_duration' %}
+                    <i class="fas fa-question-circle" style="color: blue;" title="The average length of a session in minutes during the selected date range. A session starts when a user visits your site and ends after 30 minutes of inactivity. High average session duration can indicate that users are finding your content engaging."></i>
+                    {% elif key == 'event_count' %}
+                    <i class="fas fa-question-circle" style="color: blue;" title="The total number of events triggered by users during the selected date range. Events can include actions like clicks, downloads, or video plays. This metric helps to understand how users interact with your site."></i>
+                    {% elif key == 'sessions_by_channel_group' %}
+                    <i class="fas fa-question-circle" style="color: blue;" title="The distribution of sessions across different channel groups during the selected date range. Channel groups include sources like organic search, direct traffic, social networks, and email campaigns. This helps to understand which channels are driving the most traffic."></i>
+                    {% elif key == 'bounce_rate' %}
+                    <i class="fas fa-question-circle" style="color: blue;" title="The percentage of sessions in which users viewed only one page before leaving during the selected date range. A high bounce rate might indicate that users are not finding what they are looking for on your site."></i>
+                    {% elif key == 'active_users_by_country' %}
+                    <i class="fas fa-question-circle" style="color: blue;" title="The number of unique users who engaged with your site or app, broken down by country. This helps identify the geographical distribution of your user base."></i>
+                    {% elif key == 'active_users_by_city' %}
+                    <i class="fas fa-question-circle" style="color: blue;" title="The number of unique users who engaged with your site or app, broken down by city. This helps to identify the cities where your users are located."></i>
+                    {% elif key == 'active_users_by_device' %}
+                    <i class="fas fa-question-circle" style="color: blue;" title="The number of unique users who engaged with your site or app, broken down by device category. This includes categories like desktop, mobile, and tablet. Understanding device usage helps in optimizing the user experience for different devices."></i>
+                    {% elif key == 'active_users_by_browser' %}
+                    <i class="fas fa-question-circle" style="color: blue;" title="The number of unique users who engaged with your site or app, broken down by browser. This helps identify which browsers are most commonly used by your visitors, which can guide your browser compatibility testing."></i>
+                    {% elif key == 'active_users_by_pageTitle' %}
+                    <i class="fas fa-question-circle" style="color: blue;" title="The number of unique users who engaged with your site or app, broken down by page title. This helps to understand which pages are attracting the most attention."></i>
+                    {% elif key == 'event_count_by_name_over_time' %}
+                    <i class="fas fa-question-circle" style="color: blue;" title="The Event count by Event name card in the Realtime report shows you each triggered event and the number of times each event was triggered in the last 30 minutes by the users on your website or app."></i>
+                    {% endif %}
+                </h2>
+                {{ graph | safe }}
+            </div>
+            {% endif %}
+        {% endfor %}            
+    </main>
+    <script>
+        $(document).ready(function() {
+            $('.datepicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+
+            $('#date_range').change(function() {
+                if ($(this).val() === 'custom') {
+                    $('#custom_date_range').show();
+                } else {
+                    $('#custom_date_range').hide();
+                }
+            });
+        });
+    </script>
+    <script>
+        // Function to show/hide custom property ID input field
+        function checkCustomOption(value) {
+            if (value === 'custom') {
+                document.getElementById('custom_property_div').style.display = 'block';
+            } else {
+                document.getElementById('custom_property_div').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
