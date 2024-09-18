@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 import json
 
-with open('config.json') as config_file:
+with open('/home/harsh/julius-harshit-projects/analytics_dashboard/config.json') as config_file:
     config = json.load(config_file)
 
 username = config.get('username')

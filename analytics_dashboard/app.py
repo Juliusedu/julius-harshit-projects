@@ -10,7 +10,8 @@ from google.analytics.data_v1beta.types import RunReportRequest
 
 app = Flask(__name__)
 
-KEY_FILE_LOCATION = 'development.json'
+
+KEY_FILE_LOCATION = '/home/harsh/julius-harshit-projects/analytics_dashboard/development.json'
 SCOPES = ['https://www.googleapis.com/auth/analytics.readonly']
 # PROPERTY_ID = '414149946'  # Replace with your GA4 property ID
 
