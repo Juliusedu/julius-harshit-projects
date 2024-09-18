@@ -1,1 +1,2 @@
 Use Google colab to run the webscraping as it, as google colab selenium will work there. And BigQuery is attached, use harshit@juliusedu.com
+Type in the title you wanted to scrape and it will be saved into the bigquery table (apprenticeship_jobs_data) into the dataset_id (apprenticeship_data)
