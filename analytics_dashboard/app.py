@@ -10,16 +10,17 @@ from google.analytics.data_v1beta.types import RunReportRequest
 
 app = Flask(__name__)
 
-
+# Key location for development-427419
 KEY_FILE_LOCATION = '/home/harsh/development.json'
 SCOPES = ['https://www.googleapis.com/auth/analytics.readonly']
-# PROPERTY_ID = '414149946'  # Replace with your GA4 property ID
+# PROPERTY_ID = '414149946'
 
 credentials = service_account.Credentials.from_service_account_file(
     KEY_FILE_LOCATION, scopes=SCOPES)
 
 client = BetaAnalyticsDataClient(credentials=credentials)
 
+# Calculate the dates for display
 def calculate_date(date_str):
     if date_str == 'today':
         return datetime.today()
@@ -31,6 +32,7 @@ def calculate_date(date_str):
     else:
         return datetime.strptime(date_str, '%Y-%m-%d')
 
+# 
 def get_report(client, metrics, dimensions, start_date, end_date, property_id):
     request = RunReportRequest(
         property=f"properties/{property_id}",

@@ -13,6 +13,7 @@ import json
 with open('/home/harsh/julius-harshit-projects/analytics_dashboard/config.json') as config_file:
     config = json.load(config_file)
 
+# Mixpanel credential file 
 username = config.get('username')
 secret = config.get('secret')
 
